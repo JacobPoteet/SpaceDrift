@@ -28,10 +28,18 @@ function Camera:updateFromWindow(windowPosition, windowSize)
         windowPosition.y + windowSize.y / 2
     )
 
-    -- Set target position with 1:1 movement scale
+    -- Calculate how far the window has moved from the center of the monitor
+    local monitorCenterX = constants.MONITOR_WIDTH / 2
+    local monitorCenterY = constants.MONITOR_HEIGHT / 2
+
+    local windowOffsetX = windowCenter.x - monitorCenterX
+    local windowOffsetY = windowCenter.y - monitorCenterY
+
+    -- Set camera position to move the world opposite to window movement
+    -- This creates the illusion that the window is moving through space
     self.targetPosition:set(
-        -windowCenter.x * constants.CAMERA_MOVEMENT_SCALE,
-        -windowCenter.y * constants.CAMERA_MOVEMENT_SCALE
+        -windowOffsetX * constants.CAMERA_MOVEMENT_SCALE,
+        -windowOffsetY * constants.CAMERA_MOVEMENT_SCALE
     )
 
     -- Apply movement immediately (no smoothing)

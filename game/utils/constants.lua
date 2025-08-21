@@ -17,13 +17,13 @@ constants.MAX_WINDOW_Y = constants.MONITOR_HEIGHT - constants.WINDOW_HEIGHT
 
 -- World Generation
 constants.WORLD_SEED = 42
-constants.WORLD_SIZE = 10000
-constants.PLANET_COUNT = 15
-constants.MIN_PLANET_DISTANCE = 800
+constants.WORLD_SIZE = 5000  -- Reduced from 10000 for better visibility
+constants.PLANET_COUNT = 20   -- Increased from 15 for more content
+constants.MIN_PLANET_DISTANCE = 400  -- Reduced from 800 for closer planets
 
 -- Planet Constants
-constants.MIN_PLANET_SIZE = 30
-constants.MAX_PLANET_SIZE = 120
+constants.MIN_PLANET_SIZE = 40   -- Increased from 30 for better visibility
+constants.MAX_PLANET_SIZE = 150  -- Increased from 120 for more variety
 constants.PLANET_COLORS = {
     {0.8, 0.6, 0.4}, -- Brown
     {0.4, 0.6, 0.8}, -- Blue

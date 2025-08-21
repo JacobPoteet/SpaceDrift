@@ -66,6 +66,19 @@ function World:generate()
         table.insert(self.planets, planet)
     end
 
+    -- Add a few planets closer to the center for immediate visibility
+    for i = 1, 3 do
+        local angle = (i - 1) * math.pi * 2 / 3
+        local distance = 300 + i * 100
+        local x = math.cos(angle) * distance
+        local y = math.sin(angle) * distance
+        local size = love.math.random(constants.MIN_PLANET_SIZE, constants.MAX_PLANET_SIZE)
+        local color = constants.PLANET_COLORS[love.math.random(1, #constants.PLANET_COLORS)]
+
+        local planet = Planet.new(x, y, size, color)
+        table.insert(self.planets, planet)
+    end
+
     print("Generated " .. #self.planets .. " planets")
 end
 

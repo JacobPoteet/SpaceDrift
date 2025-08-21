@@ -54,8 +54,12 @@ function Game:load()
 
     print("Space Exploration Game initialized")
     print("Window size: " .. constants.WINDOW_WIDTH .. "x" .. constants.WINDOW_HEIGHT)
+    print("Window position: (" .. constants.WINDOW_START_X .. ", " .. constants.WINDOW_START_Y .. ")")
     print("World size: " .. self.world:getSize())
     print("Planets generated: " .. #self.world:getPlanets())
+    print("Camera position: (" .. self.camera:getPosition().x .. ", " .. self.camera:getPosition().y .. ")")
+    print("Press SPACE to pause and see debug grid")
+    print("Press R to generate new world")
 end
 
 ---Update the game
@@ -98,6 +102,9 @@ function Game:draw()
     -- Apply camera transformation
     self.camera:apply()
 
+    -- Draw debug grid (optional - helps visualize world coordinates)
+    self:drawDebugGrid()
+
     -- Draw world (planets and stars)
     self.world:draw(self.camera)
 
@@ -117,6 +124,39 @@ function Game:draw()
     self:drawUI()
 end
 
+---Draw debug grid to visualize world coordinates
+function Game:drawDebugGrid()
+    if self.state == "paused" then
+        love.graphics.setColor(0.3, 0.3, 0.3, 0.5)
+        love.graphics.setLineWidth(1)
+
+        -- Draw grid lines every 500 pixels
+        local gridSize = 500
+        local startX = math.floor(self.camera.position.x / gridSize) * gridSize
+        local startY = math.floor(self.camera.position.y / gridSize) * gridSize
+        local endX = startX + love.graphics.getWidth() + gridSize
+        local endY = startY + love.graphics.getHeight() + gridSize
+
+        -- Vertical lines
+        for x = startX, endX, gridSize do
+            love.graphics.line(x, startY, x, endY)
+        end
+
+        -- Horizontal lines
+        for y = startY, endY, gridSize do
+            love.graphics.line(startX, y, endX, y)
+        end
+
+        -- Draw origin marker
+        love.graphics.setColor(1, 0, 0, 0.8)
+        love.graphics.circle("fill", 0, 0, 10)
+        love.graphics.setColor(1, 1, 1, 0.8)
+        love.graphics.print("ORIGIN", 15, -5)
+
+        love.graphics.setLineWidth(1)
+    end
+end
+
 ---Draw UI elements
 function Game:drawUI()
     -- Draw FPS counter
@@ -127,17 +167,28 @@ function Game:drawUI()
     local windowPos = self.window:getPosition()
     love.graphics.print(string.format("Window: (%d, %d)", windowPos.x, windowPos.y), 10, 30)
 
+    -- Draw window size info
+    local windowSize = self.window:getSize()
+    love.graphics.print(string.format("Size: %dx%d", windowSize.x, windowSize.y), 10, 50)
+
     -- Draw world info
     local worldCenter = self.camera:getPosition()
-    love.graphics.print(string.format("World: (%.0f, %.0f)", -worldCenter.x, -worldCenter.y), 10, 50)
+    love.graphics.print(string.format("Camera: (%.0f, %.0f)", worldCenter.x, worldCenter.y), 10, 70)
 
     -- Draw planet count
-    love.graphics.print("Planets: " .. #self.world:getPlanets(), 10, 70)
+    love.graphics.print("Planets: " .. #self.world:getPlanets(), 10, 90)
 
     -- Draw instructions
     love.graphics.setColor(1, 1, 1, 0.6)
-    love.graphics.print("Drag window to explore space", 10, love.graphics.getHeight() - 40)
-    love.graphics.print("Resize window edges to change view", 10, love.graphics.getHeight() - 20)
+    love.graphics.print("Drag window to explore space", 10, love.graphics.getHeight() - 60)
+    love.graphics.print("Resize window edges to change view", 10, love.graphics.getHeight() - 40)
+    love.graphics.print("R: New world, Space: Pause, Esc: Quit", 10, love.graphics.getHeight() - 20)
+
+    -- Draw debug info
+    if self.state == "paused" then
+        love.graphics.setColor(1, 0, 0, 0.8)
+        love.graphics.print("PAUSED", love.graphics.getWidth() / 2 - 30, 10)
+    end
 end
 
 ---Handle mouse press events
@@ -152,7 +203,7 @@ function Game:mousepressed(x, y, button, isTouch)
         if nearEdge then
             self.window:startResize(x, y)
         else
-            -- Start dragging the window
+            -- Start dragging the window from anywhere else
             self.window:startDrag(x, y)
         end
     end
@@ -217,6 +268,8 @@ function Game:resize(width, height)
 
     -- Update camera
     self.camera:updateFromWindow(self.window:getPosition(), self.window:getSize())
+
+    print("Window resized to: " .. width .. "x" .. height)
 end
 
 ---Get the game state

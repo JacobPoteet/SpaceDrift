@@ -79,7 +79,9 @@ end
 
 ---Stop dragging
 function Window:stopDrag()
-    self.isDragging = false
+    if self.isDragging then
+        self.isDragging = false
+    end
 end
 
 ---Start resizing the window
@@ -97,8 +99,8 @@ function Window:startResize(x, y)
 end
 
 ---Update resizing
----@param x number Mouse X position
----@param y number Mouse Y position
+---@param x number Mouse X position (screen coordinates)
+---@param y number Mouse Y position (screen coordinates)
 function Window:updateResize(x, y)
     if self.isResizing then
         local newWidth = self.size.x
@@ -106,18 +108,22 @@ function Window:updateResize(x, y)
         local newX = self.position.x
         local newY = self.position.y
 
+        -- Convert screen coordinates to local window coordinates
+        local localX = x - self.position.x
+        local localY = y - self.position.y
+
         if self.resizeCorner:find("e") then
-            newWidth = math.max(300, x)
+            newWidth = math.max(300, localX)
         elseif self.resizeCorner:find("w") then
-            local deltaX = self.size.x - x
+            local deltaX = self.size.x - localX
             newWidth = math.max(300, deltaX)
             newX = self.position.x + (self.size.x - newWidth)
         end
 
         if self.resizeCorner:find("s") then
-            newHeight = math.max(300, y)
+            newHeight = math.max(300, localY)
         elseif self.resizeCorner:find("n") then
-            local deltaY = self.size.y - y
+            local deltaY = self.size.y - localY
             newHeight = math.max(300, deltaY)
             newY = self.position.y + (self.size.y - newHeight)
         end
@@ -125,6 +131,9 @@ function Window:updateResize(x, y)
         -- Apply new size and position
         self.size:set(newWidth, newHeight)
         self:setPosition(newX, newY)
+
+        -- Note: We don't call love.window.setMode here as it causes flashing
+        -- The actual window resize will be handled by LÖVE's resize event
     end
 end
 
