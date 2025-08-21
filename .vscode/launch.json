@@ -1,28 +1,21 @@
-{
-  "version": "0.2.0",
-  "configurations": [
+"version": "0.2.0",
+"configurations": [
     {
-      "type": "lua-local",
-      "request": "launch",
-      "name": "Debug",
-      "program": {
-        "command": "love"
-      },
-      "args": [
-        "game/",
-        "debug"
-      ],
+        "name": "Debug Lua Interpreter",
+        "type": "lua-local",
+        "request": "launch",
+        "program": {
+            "lua": "lua",
+            "file": "${file}"
+        }
     },
     {
-      "type": "lua-local",
-      "request": "launch",
-      "name": "Release",
-      "program": {
-        "command": "love"
-      },
-      "args": [
-        "game/",
-      ],
-    },
-  ]
-}
+        "name": "Debug Custom Lua Environment",
+        "type": "lua-local",
+        "request": "launch",
+        "program": {
+            "command": "command"
+        },
+        "args": []
+    }
+]
